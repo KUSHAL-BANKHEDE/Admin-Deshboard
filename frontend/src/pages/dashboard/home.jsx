@@ -1,4 +1,4 @@
-import React from "react";
+import React , { useEffect } from "react";
 import {
   Typography,
   Card,
@@ -28,6 +28,7 @@ import {
 import { CheckCircleIcon, ClockIcon } from "@heroicons/react/24/solid";
 import { useNavigate } from "react-router-dom";
 
+
 export function Home() {
 
 
@@ -37,7 +38,7 @@ export function Home() {
   useEffect(() => {
     const token = sessionStorage.getItem("token");
     if (!token) {
-      navigate("/auth/sign-in"); // Redirect to login if not authenticated
+      navigate("/"); // Redirect to login if not authenticated
     }
   }, [navigate]);
   return (

@@ -6,8 +6,9 @@ import {
   ServerStackIcon,
   RectangleStackIcon,
 } from "@heroicons/react/24/solid";
-import { Home, Profile, Tables, Notifications } from "@/pages/dashboard";
+import { Home, Profile, Tables, Notifications  } from "@/pages/dashboard";
 import { SignIn, SignUp } from "@/pages/auth";
+import Services from "./pages/dashboard/services";
 
 const icon = {
   className: "w-5 h-5 text-inherit",
@@ -23,6 +24,14 @@ export const routes = [
         path: "/home",
         element: <Home />,
       },
+
+      {
+        icon: <RectangleStackIcon className="h-5 w-5" />, // Example icon for services
+        name: "Services",
+        path: "/services",
+        element: <Services/> // Ensure this matches the route in your router config
+      },
+
       {
         icon: <UserCircleIcon {...icon} />,
         name: "profile",

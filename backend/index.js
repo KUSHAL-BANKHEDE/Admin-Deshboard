@@ -2,9 +2,13 @@ const express = require('express');
 
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const cloudinary = require('cloudinary').v2;
+const dotenv = require('dotenv');
 
 const authRoutes = require('./routes/authRoutes');
 const servicesRoutes = require('./routes/servicesRoutes');
+const path = require('path');
+dotenv.config(); 
 
 const app = express();
 app.use(cors());
@@ -15,6 +19,7 @@ app.use(bodyParser.json());
 
 // Hardcoded admin credentials
  // This should be a strong secret key in production
+ 
 
  app.use('/api', authRoutes);
  app.use('/api' , servicesRoutes);

@@ -13,8 +13,9 @@ exports.login =  (req, res) => {
     // Check if the provided username and password match the admin credentials
     if (email === adminID && password === adminPassword) {
         // Generate a JWT token
-        const token = jwt.sign({ email }, secretKey, { expiresIn: '1h' });
+        const token = jwt.sign({ email }, secretKey, { expiresIn: '10h' });
         return res.status(200).json({ message: 'Login successful', token });
+       
     } else {
         return res.status(401).json({ message: 'Invalid credentials' });
     }

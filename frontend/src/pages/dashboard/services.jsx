@@ -1,25 +1,43 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import { Domain } from "@/utils/constent";
+
+// Cloudinary URL
+const cloudinaryUploadUrl = 'https://api.cloudinary.com/v1_1/dfj7iplni/image/upload';
+const cloudinaryPreset = 'admin-deshboard';
 
 const Services = () => {
   const [services, setServices] = useState([]);
   const [newService, setNewService] = useState({ name: "", info: "", image: null });
+  const [imageUrl, setImageUrl] = useState(""); // Store the uploaded image URL
 
-  // Fetch services on load
+  const token = sessionStorage.getItem("token");
+
   useEffect(() => {
     fetchServices();
   }, []);
 
+  // Fetch services
   const fetchServices = async () => {
     try {
-      const response = await axios.get("/api/services");
-      setServices(response.data);
+      const token = sessionStorage.getItem("token");
+      const response = await fetch(`${Domain}/api/services`, {
+        method: "GET",
+        // headers: {
+        //   Authorization: `Bearer ${token}`,
+        // },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setServices(data);
+      } else {
+        console.error("Error fetching services");
+      }
     } catch (error) {
       console.error("Error fetching services", error);
     }
   };
 
-  // Handle input change for service creation
+  // Handle input changes
   const handleInputChange = (e) => {
     const { name, value, files } = e.target;
     if (name === "image") {
@@ -29,29 +47,83 @@ const Services = () => {
     }
   };
 
+  // Upload image to Cloudinary
+  const uploadImageToCloudinary = async (image) => {
+    const formData = new FormData();
+    formData.append("file", image);
+    formData.append("upload_preset", cloudinaryPreset);
+
+    try {
+      const response = await fetch(cloudinaryUploadUrl, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        return data.secure_url; // Get the image URL
+      } else {
+        console.error("Error uploading image");
+        return null;
+      }
+    } catch (error) {
+      console.error("Error uploading image", error);
+      return null;
+    }
+  };
+
   // Submit new service
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const formData = new FormData();
-    formData.append("name", newService.name);
-    formData.append("info", newService.info);
-    if (newService.image) formData.append("image", newService.image);
 
-    try {
-      await axios.post("/api/services", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      fetchServices(); // Refresh services list
-    } catch (error) {
-      console.error("Error creating service", error);
+    // Upload the image to Cloudinary
+    const uploadedImageUrl = await uploadImageToCloudinary(newService.image);
+
+    if (uploadedImageUrl) {
+      const serviceData = {
+        name: newService.name,
+        info: newService.info,
+        image: uploadedImageUrl, // Use the Cloudinary image URL
+      };
+
+      try {
+        const token = sessionStorage.getItem("token");
+        const response = await fetch(`${Domain}/api/services`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(serviceData),
+        });
+
+        if (response.ok) {
+          fetchServices(); // Refresh the service list
+        } else {
+          console.error("Error creating service");
+        }
+      } catch (error) {
+        console.error("Error creating service", error);
+      }
     }
   };
 
   // Delete a service
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`/api/services/${id}`);
-      fetchServices(); // Refresh services list
+      const token = sessionStorage.getItem("token");
+      const response = await fetch(`${Domain}/api/services/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        fetchServices(); // Refresh the service list
+      } else {
+        console.error("Error deleting service");
+      }
     } catch (error) {
       console.error("Error deleting service", error);
     }

@@ -1,10 +1,9 @@
 const express = require('express');
-
+const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const cloudinary = require('cloudinary').v2;
 const dotenv = require('dotenv');
-
 const authRoutes = require('./routes/authRoutes');
 const servicesRoutes = require('./routes/servicesRoutes');
 const path = require('path');
@@ -20,6 +19,10 @@ app.use(bodyParser.json());
 // Hardcoded admin credentials
  // This should be a strong secret key in production
  
+ mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+ .then(() => console.log('MongoDB connected'))
+ .catch((err) => console.error(err));
+
 
  app.use('/api', authRoutes);
  app.use('/api' , servicesRoutes);

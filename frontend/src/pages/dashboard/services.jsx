@@ -1,196 +1,150 @@
-import { useState, useEffect } from "react";
-import { Domain } from "@/utils/constent";
+import React, { useState } from "react";
+import { Button, Form, Card } from "react-bootstrap";
+import { AiFillDelete } from "react-icons/ai";
+import ReactQuill from "react-quill";
 
-// Cloudinary URL
-const cloudinaryUploadUrl = 'https://api.cloudinary.com/v1_1/dfj7iplni/image/upload';
-const cloudinaryPreset = 'admin-deshboard';
+const AdminDashboardForm = () => {
+  const [services, setServices] = useState([
+    { mainTitle: "", subServices: [{ subTitle: "", body: "", images: [] }] }
+  ]);
 
-const Services = () => {
-  const [services, setServices] = useState([]);
-  const [newService, setNewService] = useState({ name: "", info: "", image: null });
-  const [imageUrl, setImageUrl] = useState(""); // Store the uploaded image URL
-
-  const token = sessionStorage.getItem("token");
-
-  useEffect(() => {
-    fetchServices();
-  }, []);
-
-  // Fetch services
-  const fetchServices = async () => {
-    try {
-      const token = sessionStorage.getItem("token");
-      const response = await fetch(`${Domain}/api/services`, {
-        method: "GET",
-        // headers: {
-        //   Authorization: `Bearer ${token}`,
-        // },
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setServices(data);
-      } else {
-        console.error("Error fetching services");
-      }
-    } catch (error) {
-      console.error("Error fetching services", error);
-    }
+  // Handle Main Service Add
+  const handleAddMainService = () => {
+    setServices([...services, { mainTitle: "", subServices: [{ subTitle: "", body: "", images: [] }] }]);
   };
 
-  // Handle input changes
-  const handleInputChange = (e) => {
-    const { name, value, files } = e.target;
-    if (name === "image") {
-      setNewService({ ...newService, image: files[0] });
-    } else {
-      setNewService({ ...newService, [name]: value });
-    }
+  // Handle SubService Add
+  const handleAddSubService = (index) => {
+    const updatedServices = [...services];
+    updatedServices[index].subServices.push({ subTitle: "", body: "", images: [] });
+    setServices(updatedServices);
   };
 
-  // Upload image to Cloudinary
-  const uploadImageToCloudinary = async (image) => {
-    const formData = new FormData();
-    formData.append("file", image);
-    formData.append("upload_preset", cloudinaryPreset);
-
-    try {
-      const response = await fetch(cloudinaryUploadUrl, {
-        method: "POST",
-        body: formData,
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        return data.secure_url; // Get the image URL
-      } else {
-        console.error("Error uploading image");
-        return null;
-      }
-    } catch (error) {
-      console.error("Error uploading image", error);
-      return null;
-    }
+  // Handle SubService Remove
+  const handleRemoveSubService = (mainIndex, subIndex) => {
+    const updatedServices = [...services];
+    updatedServices[mainIndex].subServices.splice(subIndex, 1);
+    setServices(updatedServices);
   };
 
-  // Submit new service
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    // Upload the image to Cloudinary
-    const uploadedImageUrl = await uploadImageToCloudinary(newService.image);
-
-    if (uploadedImageUrl) {
-      const serviceData = {
-        name: newService.name,
-        info: newService.info,
-        image: uploadedImageUrl, // Use the Cloudinary image URL
-      };
-
-      try {
-        const token = sessionStorage.getItem("token");
-        const response = await fetch(`${Domain}/api/services`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(serviceData),
-        });
-
-        if (response.ok) {
-          fetchServices(); // Refresh the service list
-        } else {
-          console.error("Error creating service");
-        }
-      } catch (error) {
-        console.error("Error creating service", error);
-      }
-    }
+  // Handle Service Field Changes
+  const handleChangeService = (mainIndex, field, value) => {
+    const updatedServices = [...services];
+    updatedServices[mainIndex][field] = value;
+    setServices(updatedServices);
   };
 
-  // Delete a service
-  const handleDelete = async (id) => {
-    try {
-      const token = sessionStorage.getItem("token");
-      const response = await fetch(`${Domain}/api/services/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+  // Handle SubService Field Changes
+  const handleChangeSubService = (mainIndex, subIndex, field, value) => {
+    const updatedServices = [...services];
+    updatedServices[mainIndex].subServices[subIndex][field] = value;
+    setServices(updatedServices);
+  };
 
-      if (response.ok) {
-        fetchServices(); // Refresh the service list
-      } else {
-        console.error("Error deleting service");
-      }
-    } catch (error) {
-      console.error("Error deleting service", error);
-    }
+  // Handle Image Upload
+  const handleImageUpload = (mainIndex, subIndex, files) => {
+    const updatedServices = [...services];
+    updatedServices[mainIndex].subServices[subIndex].images = Array.from(files);
+    setServices(updatedServices);
+  };
+
+  // Handle Delete Main Service
+  const handleDeleteService = (mainIndex) => {
+    const updatedServices = [...services];
+    updatedServices.splice(mainIndex, 1);
+    setServices(updatedServices);
   };
 
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">Manage Services</h1>
+    <div className="container">
+      <h2>Admin Dashboard Form</h2>
+      {services.map((service, mainIndex) => (
+        <Card key={mainIndex} className="mb-3">
+          <Card.Body>
+            <Form.Group>
+              <Form.Label>Main Title</Form.Label>
+              <Form.Control
+                type="text"
+                value={service.mainTitle}
+                onChange={(e) =>
+                  handleChangeService(mainIndex, "mainTitle", e.target.value)
+                }
+                placeholder="Enter Main Title"
+              />
+            </Form.Group>
 
-      {/* New Service Form */}
-      <form onSubmit={handleSubmit} className="mb-6">
-        <div className="flex flex-col mb-4">
-          <label className="mb-2 font-bold">Service Name</label>
-          <input
-            type="text"
-            name="name"
-            value={newService.name}
-            onChange={handleInputChange}
-            className="p-2 border rounded"
-            required
-          />
-        </div>
-        <div className="flex flex-col mb-4">
-          <label className="mb-2 font-bold">Service Info</label>
-          <textarea
-            name="info"
-            value={newService.info}
-            onChange={handleInputChange}
-            className="p-2 border rounded"
-            required
-          />
-        </div>
-        <div className="flex flex-col mb-4">
-          <label className="mb-2 font-bold">Service Image</label>
-          <input
-            type="file"
-            name="image"
-            onChange={handleInputChange}
-            className="p-2 border rounded"
-            required
-          />
-        </div>
-        <button type="submit" className="bg-blue-500 text-white p-2 rounded">
-          Create Service
-        </button>
-      </form>
+            {service.subServices.map((subService, subIndex) => (
+              <Card className="mb-2" key={subIndex}>
+                <Card.Body>
+                  <Form.Group>
+                    <Form.Label>Sub Title</Form.Label>
+                    <Form.Control
+                      type="text"
+                      value={subService.subTitle}
+                      onChange={(e) =>
+                        handleChangeSubService(mainIndex, subIndex, "subTitle", e.target.value)
+                      }
+                      placeholder="Enter Sub Title"
+                    />
+                  </Form.Group>
 
-      {/* Services List */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        {services.map((service) => (
-          <div key={service._id} className="border p-4 rounded shadow">
-            <h2 className="text-lg font-bold">{service.name}</h2>
-            <p>{service.info}</p>
-            {service.image && (
-              <img src={service.image} alt={service.name} className="my-2 w-full" />
-            )}
-            <button
-              className="bg-red-500 text-white p-2 rounded mt-2"
-              onClick={() => handleDelete(service._id)}
+                  <Form.Group>
+                    <Form.Label>Body</Form.Label>
+                    <ReactQuill
+                      theme="snow"
+                      value={subService.body}
+                      onChange={(value) =>
+                        handleChangeSubService(mainIndex, subIndex, "body", value)
+                      }
+                    />
+                  </Form.Group>
+
+                  <Form.Group>
+                    <Form.Label>Images</Form.Label>
+                    <Form.Control
+                      type="file"
+                      multiple
+                      onChange={(e) =>
+                        handleImageUpload(mainIndex, subIndex, e.target.files)
+                      }
+                    />
+                  </Form.Group>
+
+                  <Button
+                    variant="danger"
+                    onClick={() => handleRemoveSubService(mainIndex, subIndex)}
+                    className="mt-2"
+                  >
+                    <AiFillDelete /> Delete Sub Service
+                  </Button>
+                </Card.Body>
+              </Card>
+            ))}
+
+            <Button
+              variant="secondary"
+              onClick={() => handleAddSubService(mainIndex)}
+              className="mt-2"
             >
-              Delete
-            </button>
-          </div>
-        ))}
-      </div>
+              Add New Sub Service
+            </Button>
+
+            <Button
+              variant="danger"
+              onClick={() => handleDeleteService(mainIndex)}
+              className="mt-2 ms-2"
+            >
+              <AiFillDelete /> Delete Main Service
+            </Button>
+          </Card.Body>
+        </Card>
+      ))}
+
+      <Button variant="primary" onClick={handleAddMainService}>
+        Add Main Service
+      </Button>
     </div>
   );
 };
 
-export default Services;
+export default AdminDashboardForm;

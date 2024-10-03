@@ -14,6 +14,7 @@ export function Footer({ brandName, brandLink, routes }) {
           <a
             href={brandLink}
             target="_blank"
+            rel="noopener noreferrer" // Security improvement for external links
             className="transition-colors hover:text-blue-500 font-bold"
           >
             {brandName}
@@ -26,7 +27,6 @@ export function Footer({ brandName, brandLink, routes }) {
               <Typography
                 as="a"
                 href={path}
-                target="_blank"
                 variant="small"
                 className="py-0.5 px-1 font-normal text-inherit transition-colors hover:text-blue-500"
               >
@@ -40,18 +40,26 @@ export function Footer({ brandName, brandLink, routes }) {
   );
 }
 
+// Set default props for brandName and brandLink
 Footer.defaultProps = {
   brandName: "HireAnything",
   brandLink: "https://www.hireanything.com",
-
+  routes: [], // Set an empty array as default for routes
 };
 
+// Define prop types for better validation
 Footer.propTypes = {
   brandName: PropTypes.string,
   brandLink: PropTypes.string,
-
+  routes: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      path: PropTypes.string.isRequired,
+    })
+  ),
 };
 
-Footer.displayName = "/src/widgets/layout/footer.jsx";
+// Set display name for easier debugging
+Footer.displayName = "Footer";
 
 export default Footer;

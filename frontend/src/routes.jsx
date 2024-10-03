@@ -45,7 +45,7 @@ export const routes = [
 
       {
         icon: <RectangleStackIcon className="h-5 w-5" />, // Example icon for services
-        name: "catagory",
+        name: "Category",
         path: "/catagory",
         element: <Category/> 
       },
@@ -58,42 +58,14 @@ export const routes = [
       },
      
 
-      // {
-      //   icon: <UserCircleIcon {...icon} />,
-      //   name: "profile",
-      //   path: "/profile",
-      //   element: <Profile />,
-      // },
-      // {
-      //   icon: <TableCellsIcon {...icon} />,
-      //   name: "tables",
-      //   path: "/tables",
-      //   element: <Tables />,
-      // },
-      // {
-      //   icon: <InformationCircleIcon {...icon} />,
-      //   name: "notifications",
-      //   path: "/notifications",
-      //   element: <Notifications />,
-      // },
     ],
   },
   {
     title: "auth pages",
     layout: "auth",
     pages: [
-      {
-        icon: <ServerStackIcon {...icon} />,
-        name: "sign in",
-        path: "/sign-in",
-        element: <SignIn />,
-      },
-      {
-        icon: <RectangleStackIcon {...icon} />,
-        name: "sign up",
-        path: "/sign-up",
-        element: <SignUp />,
-      },
+  
+  
       // {
       //   icon: <RectangleStackIcon className="h-5 w-5" />, // Example icon for services
       //   name: "signOut",

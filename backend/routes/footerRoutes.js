@@ -1,5 +1,4 @@
 const express = require('express');
-
 const authMiddleware = require('../middleware/authMiddleware');
 const upload = require('../middleware/multer');
 const { getAllFooter, createFooter, updateFooter, deleteFooter } = require('../controllers/footerController');

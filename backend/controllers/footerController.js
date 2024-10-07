@@ -12,24 +12,24 @@ exports.createFooter = async (req, res) => {
   }
 
   // Create a new service document
-  const newService = new Footer({
+  const newFooter = new Footer({
     name,
     info,
     image,
   });
 
-  await newService.save();
-  res.status(201).json(newService);
+  await newFooter.save();
+  res.status(201).json(newFooter);
 } catch (error) {
-  res.status(500).json({ message: "Server Error", error: error.message });
+  res.status(500).json({ message: "footer Error", error: error.message });
 }
 };
 
 //get all servicer
 exports.getAllFooter = async(req ,res)=>{
     try {
-        const services = await Footer.find();
-        res.send(services);
+        const footer = await Footer.find();
+        res.send(footer);
       } catch (error) {
         res.status(500).send(error);
       }
@@ -37,11 +37,11 @@ exports.getAllFooter = async(req ,res)=>{
 
 exports.getFooter = async(req ,res)=>{
     try{
-        const service = await Footer.findById(req.params.id);
-        if(!service){
+        const footer = await Footer.findById(req.params.id);
+        if(!footer){
             return res.status(404).send('service not founde');
         }
-        res.send(service);
+        res.send(footer);
     }
     catch (error){
         res.status(500).send(error);
@@ -54,15 +54,15 @@ exports.updateFooter = async (req, res) => {
     const imgPath = req.file ? `/uploads/${req.file.filename}` : req.body.img;
   
     try {
-      const service = await Footer.findByIdAndUpdate(
+      const footer = await Footer.findByIdAndUpdate(
         req.params.id,
         { name, img: imgPath, info },
         { new: true, runValidators: true }
       );
-      if (!service) {
+      if (!footer) {
         return res.status(404).send('Service not found');
       }
-      res.send(service);
+      res.send(footer);
     } catch (error) {
       res.status(400).send(error);
     }
@@ -70,11 +70,11 @@ exports.updateFooter = async (req, res) => {
 
   exports.deleteFooter = async (req, res) => {
     try {
-      const service = await Footer.findByIdAndDelete(req.params.id);
-      if (!service) {
-        return res.status(404).send('Service not found');
+      const footer = await Footer.findByIdAndDelete(req.params.id);
+      if (!footer) {
+        return res.status(404).send('footer not found');
       }
-      res.send('Service deleted');
+      res.send('footer deleted');
     } catch (error) {
       res.status(500).send(error);
     }

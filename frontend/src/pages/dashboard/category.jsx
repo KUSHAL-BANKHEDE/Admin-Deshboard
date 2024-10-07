@@ -1,9 +1,17 @@
 import { useState, useEffect } from "react";
+import { Domain } from "@/utils/constent";
 import axios from "axios";
+
+
+const cloudinaryUploadUrl = 'https://api.cloudinary.com/v1_1/dfj7iplni/image/upload';
+const cloudinaryPreset = 'admin-deshboard';
 
 const Category = () => {
   const [categories, setCategories] = useState([]);
   const [newCategory, setNewCategory] = useState({ name: "", info: "", image: null });
+  const [imageUrl, setImageUrl] = useState(""); // Store the uploaded image URL
+  
+  // const token = sessionStorage.getItem("token");
 
   // Fetch Categories on load
   useEffect(() => {
@@ -12,10 +20,21 @@ const Category = () => {
 
   const fetchCategory = async () => {
     try {
-      const response = await axios.get("/api/category");
-      setCategories(response.data);
+      const token = sessionStorage.getItem("token");
+      const response = await fetch(`${Domain}/api/category`, {
+        method: "GET",
+        // headers: {
+        //   Authorization: `Bearer ${token}`,
+        // },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setCategories(data);
+      } else {
+        console.error("Error fetching services");
+      }
     } catch (error) {
-      console.error("Error fetching categories", error);
+      console.error("Error fetching services", error);
     }
   };
 
@@ -29,31 +48,89 @@ const Category = () => {
     }
   };
 
-  // Submit new Category
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+
+
+  // Upload image to Cloudinary
+  const uploadImageToCloudinary = async (image) => {
     const formData = new FormData();
-    formData.append("name", newCategory.name);
-    formData.append("info", newCategory.info);
-    if (newCategory.image) formData.append("image", newCategory.image);
+    formData.append("file", image);
+    formData.append("upload_preset", cloudinaryPreset);
 
     try {
-      await axios.post("/api/category", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+      const response = await fetch(cloudinaryUploadUrl, {
+        method: "POST",
+        body: formData,
       });
-      fetchCategory(); // Refresh Categories list
+
+      if (response.ok) {
+        const data = await response.json();
+        return data.secure_url; // Get the image URL
+      } else {
+        console.error("Error uploading image");
+        return null;
+      }
     } catch (error) {
-      console.error("Error creating category", error);
+      console.error("Error uploading image", error);
+      return null;
     }
   };
 
-  // Delete a Category
+
+  // Submit new Category
+  // Submit new service
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // Upload the image to Cloudinary
+    const uploadedImageUrl = await uploadImageToCloudinary(newCategory.image);
+
+    if (uploadedImageUrl) {
+      const serviceData = {
+        name: newCategory.name,
+        info: newCategory.info,
+        image: uploadedImageUrl, // Use the Cloudinary image URL
+      };
+
+      try {
+        const token = sessionStorage.getItem("token");
+        const response = await fetch(`${Domain}/api/category`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(serviceData),
+        });
+
+        if (response.ok) {
+          fetchCategory(); // Refresh the service list
+        } else {
+          console.error("Error creating service");
+        }
+      } catch (error) {
+        console.error("Error creating service", error);
+      }
+    }
+  };
+
+  // Delete a service
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`/api/category/${id}`);
-      fetchCategory(); // Refresh categories list
+      const token = sessionStorage.getItem("token");
+      const response = await fetch(`${Domain}/api/category/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        fetchCategory(); // Refresh the service list
+      } else {
+        console.error("Error deleting service");
+      }
     } catch (error) {
-      console.error("Error deleting category", error);
+      console.error("Error deleting service", error);
     }
   };
 

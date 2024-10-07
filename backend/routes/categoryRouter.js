@@ -1,5 +1,4 @@
 const express = require('express');
-
 const authMiddleware = require('../middleware/authMiddleware');
 const upload = require('../middleware/multer');
 const { getAllCategory, createCategory, updateCategory, deleteCategory } = require('../controllers/categoryController');

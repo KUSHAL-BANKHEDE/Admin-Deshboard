@@ -8,4 +8,4 @@ const AboutusSchema = new mongoose.Schema({
     
 });
 
-module.exports = mongoose.model('Services', AboutusSchema);
+module.exports = mongoose.model('Aboutus', AboutusSchema);

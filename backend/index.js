@@ -6,6 +6,9 @@ const cloudinary = require('cloudinary').v2;
 const dotenv = require('dotenv');
 const authRoutes = require('./routes/authRoutes');
 const servicesRoutes = require('./routes/servicesRoutes');
+const categoryRoutes = require('./routes/categoryRouter');
+const aboutusRoutes = require('./routes/aboutusRoutes');
+const footerRoutes = require('./routes/footerRoutes');
 const path = require('path');
 dotenv.config(); 
 
@@ -26,6 +29,9 @@ app.use(bodyParser.json());
 
  app.use('/api', authRoutes);
  app.use('/api' , servicesRoutes);
+ app.use('/api' , categoryRoutes);
+ app.use('/api' , aboutusRoutes);
+ app.use('/api' , footerRoutes);
  
 
 // Example protected route

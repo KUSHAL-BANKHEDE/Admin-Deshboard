@@ -12,14 +12,14 @@ exports.createAboutus = async (req, res) => {
   }
 
   // Create a new service document
-  const newService = new Aboutus({
+  const newAboutus = new Aboutus({
     name,
     info,
     image,
   });
 
-  await newService.save();
-  res.status(201).json(newService);
+  await newAboutus.save();
+  res.status(201).json(newAboutus);
 } catch (error) {
   res.status(500).json({ message: "Server Error", error: error.message });
 }
@@ -28,8 +28,8 @@ exports.createAboutus = async (req, res) => {
 //get all servicer
 exports.getAllAboutus = async(req ,res)=>{
     try {
-        const services = await Aboutus.find();
-        res.send(services);
+        const aboutus = await Aboutus.find();
+        res.send(aboutus);
       } catch (error) {
         res.status(500).send(error);
       }
@@ -37,11 +37,11 @@ exports.getAllAboutus = async(req ,res)=>{
 
 exports.getAboutus = async(req ,res)=>{
     try{
-        const service = await Aboutus.findById(req.params.id);
-        if(!service){
-            return res.status(404).send('service not founde');
+        const aboutus = await Aboutus.findById(req.params.id);
+        if(!aboutus){
+            return res.status(404).send('aboutus not founde');
         }
-        res.send(service);
+        res.send(aboutus);
     }
     catch (error){
         res.status(500).send(error);
@@ -54,15 +54,15 @@ exports.updateAboutus = async (req, res) => {
     const imgPath = req.file ? `/uploads/${req.file.filename}` : req.body.img;
   
     try {
-      const service = await Aboutus.findByIdAndUpdate(
+      const aboutus = await Aboutus.findByIdAndUpdate(
         req.params.id,
         { name, img: imgPath, info },
         { new: true, runValidators: true }
       );
-      if (!service) {
-        return res.status(404).send('Service not found');
+      if (!aboutus) {
+        return res.status(404).send('aboutus not found');
       }
-      res.send(service);
+      res.send(aboutus);
     } catch (error) {
       res.status(400).send(error);
     }
@@ -70,11 +70,11 @@ exports.updateAboutus = async (req, res) => {
 
   exports.deleteAboutus = async (req, res) => {
     try {
-      const service = await Aboutus.findByIdAndDelete(req.params.id);
-      if (!service) {
-        return res.status(404).send('Service not found');
+      const aboutus = await Aboutus.findByIdAndDelete(req.params.id);
+      if (!aboutus) {
+        return res.status(404).send('aboutus not found');
       }
-      res.send('Service deleted');
+      res.send('aboutus deleted');
     } catch (error) {
       res.status(500).send(error);
     }

@@ -8,4 +8,4 @@ const FooterSchema = new mongoose.Schema({
     
 });
 
-module.exports = mongoose.model('Services', FooterSchema);
+module.exports = mongoose.model('Footer', FooterSchema);

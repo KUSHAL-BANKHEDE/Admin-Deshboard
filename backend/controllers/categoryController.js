@@ -12,14 +12,14 @@ exports.createCategory = async (req, res) => {
   }
 
   // Create a new service document
-  const newService = new Category({
+  const newCatagory = new Category({
     name,
     info,
     image,
   });
 
-  await newService.save();
-  res.status(201).json(newService);
+  await newCatagory.save();
+  res.status(201).json(newCatagory);
 } catch (error) {
   res.status(500).json({ message: "Server Error", error: error.message });
 }
@@ -28,8 +28,8 @@ exports.createCategory = async (req, res) => {
 //get all servicer
 exports.getAllCategory = async(req ,res)=>{
     try {
-        const services = await Category.find();
-        res.send(services);
+        const category = await Category.find();
+        res.send(category);
       } catch (error) {
         res.status(500).send(error);
       }
@@ -37,11 +37,11 @@ exports.getAllCategory = async(req ,res)=>{
 
 exports.getCategory = async(req ,res)=>{
     try{
-        const service = await Category.findById(req.params.id);
-        if(!service){
-            return res.status(404).send('service not founde');
+        const category = await Category.findById(req.params.id);
+        if(!category){
+            return res.status(404).send('category not founde');
         }
-        res.send(service);
+        res.send(category);
     }
     catch (error){
         res.status(500).send(error);
@@ -54,15 +54,15 @@ exports.updateCategory = async (req, res) => {
     const imgPath = req.file ? `/uploads/${req.file.filename}` : req.body.img;
   
     try {
-      const service = await Category.findByIdAndUpdate(
+      const category = await Category.findByIdAndUpdate(
         req.params.id,
         { name, img: imgPath, info },
         { new: true, runValidators: true }
       );
-      if (!service) {
-        return res.status(404).send('Service not found');
+      if (!category) {
+        return res.status(404).send('category not found');
       }
-      res.send(service);
+      res.send(category);
     } catch (error) {
       res.status(400).send(error);
     }
@@ -70,11 +70,11 @@ exports.updateCategory = async (req, res) => {
 
   exports.deleteCategory = async (req, res) => {
     try {
-      const service = await Category.findByIdAndDelete(req.params.id);
-      if (!service) {
-        return res.status(404).send('Service not found');
+      const category = await Category.findByIdAndDelete(req.params.id);
+      if (!category) {
+        return res.status(404).send('category not found');
       }
-      res.send('Service deleted');
+      res.send('category deleted');
     } catch (error) {
       res.status(500).send(error);
     }

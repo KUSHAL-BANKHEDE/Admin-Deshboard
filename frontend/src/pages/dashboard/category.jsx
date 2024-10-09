@@ -23,9 +23,6 @@ const Category = () => {
       const token = sessionStorage.getItem("token");
       const response = await fetch(`${Domain}/api/category`, {
         method: "GET",
-        // headers: {
-        //   Authorization: `Bearer ${token}`,
-        // },
       });
       if (response.ok) {
         const data = await response.json();

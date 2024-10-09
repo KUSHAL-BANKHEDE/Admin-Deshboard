@@ -6,7 +6,7 @@ const cloudinaryPreset = 'admin-deshboard';
 
 const AboutUs = () => {
   const [aboutUsList, setAboutUsList] = useState([]);
-  const [newAbout, setNewAbout] = useState({ title: "", description: "", image: null });
+  const [newAbout, setNewAbout] = useState({ name: "", info: "", image: null });
   
   // Fetch About Us data on load
   useEffect(() => {
@@ -74,8 +74,8 @@ const AboutUs = () => {
 
     if (uploadedImageUrl) {
       const aboutData = {
-        title: newAbout.title,
-        description: newAbout.description,
+        name: newAbout.name,
+        info: newAbout.info,
         image: uploadedImageUrl,
       };
 
@@ -132,8 +132,8 @@ const AboutUs = () => {
           <label className="mb-2 font-bold">Title</label>
           <input
             type="text"
-            name="title"
-            value={newAbout.title}
+            name="name"
+            value={newAbout.name}
             onChange={handleInputChange}
             className="p-2 border rounded"
             required
@@ -142,8 +142,8 @@ const AboutUs = () => {
         <div className="flex flex-col mb-4">
           <label className="mb-2 font-bold">Description</label>
           <textarea
-            name="description"
-            value={newAbout.description}
+            name="info"
+            value={newAbout.info}
             onChange={handleInputChange}
             className="p-2 border rounded"
             required
@@ -168,10 +168,10 @@ const AboutUs = () => {
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         {aboutUsList.map((about) => (
           <div key={about._id} className="border p-4 rounded shadow">
-            <h2 className="text-lg font-bold">{about.title}</h2>
-            <p>{about.description}</p>
+            <h2 className="text-lg font-bold">{about.name}</h2>
+            <p>{about.info}</p>
             {about.image && (
-              <img src={about.image} alt={about.title} className="my-2 w-full" />
+              <img src={about.image} alt={about.name} className="my-2 w-full" />
             )}
             <button
               className="bg-red-500 text-white p-2 rounded mt-2"

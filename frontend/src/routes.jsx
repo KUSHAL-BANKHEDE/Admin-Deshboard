@@ -45,7 +45,7 @@ export const routes = [
 
       {
         icon: <RectangleStackIcon className="h-5 w-5" />, // Example icon for services
-        name: "catagory",
+        name: "category",
         path: "/catagory",
         element: <Category/> 
       },

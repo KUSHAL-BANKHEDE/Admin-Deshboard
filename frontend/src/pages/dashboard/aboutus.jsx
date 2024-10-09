@@ -1,48 +1,43 @@
 import { useState, useEffect } from "react";
-import ReactQuill from "react-quill";
-
-import { Domain } from "@/utils/constent"; // Update with your actual path
-
-import "react-quill/dist/quill.snow.css"; // Quill editor's theme
+import { Domain } from "@/utils/constent";
 
 const cloudinaryUploadUrl = 'https://api.cloudinary.com/v1_1/dfj7iplni/image/upload';
 const cloudinaryPreset = 'admin-deshboard';
 
 const AboutUs = () => {
-  const [aboutUsData, setAboutUsData] = useState([]);
-  const [newAboutUs, setNewAboutUs] = useState({ title: "", body: "", image: null });
-
-  // Fetch existing About Us data on load
+  const [aboutUsList, setAboutUsList] = useState([]);
+  const [newAbout, setNewAbout] = useState({ title: "", description: "", image: null });
+  
+  // Fetch About Us data on load
   useEffect(() => {
     fetchAboutUs();
   }, []);
 
   const fetchAboutUs = async () => {
     try {
-      const response = await fetch(`${Domain}/api/aboutus`);
-      if (!response.ok) {
-        throw new Error("Failed to fetch About Us data");
+      const token = sessionStorage.getItem("token");
+      const response = await fetch(`${Domain}/api/aboutus`, {
+        method: "GET",
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setAboutUsList(data);
+      } else {
+        console.error("Error fetching About Us data");
       }
-      const data = await response.json();
-      setAboutUsData(data);
     } catch (error) {
       console.error("Error fetching About Us data", error);
     }
   };
 
-  // Handle input change for title and image
+  // Handle input change for About Us creation
   const handleInputChange = (e) => {
     const { name, value, files } = e.target;
     if (name === "image") {
-      setNewAboutUs({ ...newAboutUs, image: files[0] });
+      setNewAbout({ ...newAbout, image: files[0] });
     } else {
-      setNewAboutUs({ ...newAboutUs, [name]: value });
+      setNewAbout({ ...newAbout, [name]: value });
     }
-  };
-
-  // Handle rich text editor change for body
-  const handleBodyChange = (value) => {
-    setNewAboutUs({ ...newAboutUs, body: value });
   };
 
   // Upload image to Cloudinary
@@ -59,7 +54,7 @@ const AboutUs = () => {
 
       if (response.ok) {
         const data = await response.json();
-        return data.secure_url; // Get the image URL
+        return data.secure_url;
       } else {
         console.error("Error uploading image");
         return null;
@@ -70,71 +65,60 @@ const AboutUs = () => {
     }
   };
 
-  // Submit new About Us data
+  // Submit new About Us entry
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log("Current About Us Data:", newAboutUs);
+    // Upload the image to Cloudinary
+    const uploadedImageUrl = await uploadImageToCloudinary(newAbout.image);
 
-    // Validate that all fields are filled
-    if (!newAboutUs.title || !newAboutUs.body) {
-      console.error("Title and body are required fields.");
-      return;
-    }
+    if (uploadedImageUrl) {
+      const aboutData = {
+        title: newAbout.title,
+        description: newAbout.description,
+        image: uploadedImageUrl,
+      };
 
-    const formData = new FormData();
-    formData.append("title", newAboutUs.title);
-    formData.append("body", newAboutUs.body);
-    
-    // Upload the image to Cloudinary if there's an image
-    if (newAboutUs.image) {
-      const uploadedImageUrl = await uploadImageToCloudinary(newAboutUs.image);
-      formData.append("image", uploadedImageUrl); // Append the uploaded image URL
-    }
+      try {
+        const token = sessionStorage.getItem("token");
+        const response = await fetch(`${Domain}/api/aboutus`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(aboutData),
+        });
 
-    const token = sessionStorage.getItem("token"); // Get the token from session storage
-
-    try {
-      const response = await fetch(`${Domain}/api/aboutus`, {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${token}`, // Include token in the header if needed
-          // Do not set Content-Type when sending FormData; it will be set automatically
-        },
-        body: formData, // Pass the form data
-      });
-
-      if (response.ok) {
-        await fetchAboutUs(); // Refresh the data after submission
-        setNewAboutUs({ title: "", body: "", image: null }); // Reset form
-      } else {
-        const errorData = await response.json();
-        console.error("Error creating About Us content", errorData);
+        if (response.ok) {
+          fetchAboutUs(); // Refresh the list
+        } else {
+          console.error("Error creating About Us entry");
+        }
+      } catch (error) {
+        console.error("Error creating About Us entry", error);
       }
-    } catch (error) {
-      console.error("Error creating About Us content", error);
     }
   };
 
-  // Delete the existing About Us data
+  // Delete an About Us entry
   const handleDelete = async (id) => {
     try {
       const token = sessionStorage.getItem("token");
       const response = await fetch(`${Domain}/api/aboutus/${id}`, {
         method: "DELETE",
         headers: {
-          "Authorization": `Bearer ${token}`, // Include token in the header if needed
+          Authorization: `Bearer ${token}`,
         },
       });
 
       if (response.ok) {
-        fetchAboutUs(); // Refresh the data after deletion
+        fetchAboutUs(); // Refresh the list
       } else {
-        const errorData = await response.json();
-        console.error("Error deleting About Us content", errorData);
+        console.error("Error deleting About Us entry");
       }
     } catch (error) {
-      console.error("Error deleting About Us content", error);
+      console.error("Error deleting About Us entry", error);
     }
   };
 
@@ -149,22 +133,22 @@ const AboutUs = () => {
           <input
             type="text"
             name="title"
-            value={newAboutUs.title}
+            value={newAbout.title}
             onChange={handleInputChange}
             className="p-2 border rounded"
             required
           />
         </div>
-
         <div className="flex flex-col mb-4">
-          <label className="mb-2 font-bold">Body</label>
-          <ReactQuill
-            value={newAboutUs.body}
-            onChange={handleBodyChange}
-            className="mb-4"
+          <label className="mb-2 font-bold">Description</label>
+          <textarea
+            name="description"
+            value={newAbout.description}
+            onChange={handleInputChange}
+            className="p-2 border rounded"
+            required
           />
         </div>
-
         <div className="flex flex-col mb-4">
           <label className="mb-2 font-bold">Image</label>
           <input
@@ -172,23 +156,20 @@ const AboutUs = () => {
             name="image"
             onChange={handleInputChange}
             className="p-2 border rounded"
+            required
           />
         </div>
-
         <button type="submit" className="bg-blue-500 text-white p-2 rounded">
-          Create About Us
+          Create About Us Entry
         </button>
       </form>
 
-      {/* Existing About Us Data */}
+      {/* About Us List */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        {aboutUsData.map((about) => (
+        {aboutUsList.map((about) => (
           <div key={about._id} className="border p-4 rounded shadow">
             <h2 className="text-lg font-bold">{about.title}</h2>
-            <div
-              className="prose"
-              dangerouslySetInnerHTML={{ __html: about.body }}
-            />
+            <p>{about.description}</p>
             {about.image && (
               <img src={about.image} alt={about.title} className="my-2 w-full" />
             )}

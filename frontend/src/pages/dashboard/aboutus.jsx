@@ -6,7 +6,13 @@ const cloudinaryPreset = 'admin-deshboard';
 
 const AboutUs = () => {
   const [aboutUsList, setAboutUsList] = useState([]);
-  const [newAbout, setNewAbout] = useState({ name: "", info: "", image: null });
+  const [newAbout, setNewAbout] = useState({
+    aboutus: "", 
+    marketPlace: "", 
+    problem: "", 
+    solution: "", 
+    image: null
+  });
   
   // Fetch About Us data on load
   useEffect(() => {
@@ -74,8 +80,10 @@ const AboutUs = () => {
 
     if (uploadedImageUrl) {
       const aboutData = {
-        name: newAbout.name,
-        info: newAbout.info,
+        aboutus: newAbout.aboutus,
+        marketPlace: newAbout.marketPlace,
+        problem: newAbout.problem,
+        solution: newAbout.solution,
         image: uploadedImageUrl,
       };
 
@@ -129,21 +137,42 @@ const AboutUs = () => {
       {/* New About Us Form */}
       <form onSubmit={handleSubmit} className="mb-6">
         <div className="flex flex-col mb-4">
-          <label className="mb-2 font-bold">Title</label>
+          <label className="mb-2 font-bold">About Us</label>
           <input
             type="text"
-            name="name"
-            value={newAbout.name}
+            name="aboutus"
+            value={newAbout.aboutus}
             onChange={handleInputChange}
             className="p-2 border rounded"
             required
           />
         </div>
         <div className="flex flex-col mb-4">
-          <label className="mb-2 font-bold">Description</label>
+          <label className="mb-2 font-bold">Market Place</label>
+          <input
+            type="text"
+            name="marketPlace"
+            value={newAbout.marketPlace}
+            onChange={handleInputChange}
+            className="p-2 border rounded"
+            required
+          />
+        </div>
+        <div className="flex flex-col mb-4">
+          <label className="mb-2 font-bold">Problem</label>
           <textarea
-            name="info"
-            value={newAbout.info}
+            name="problem"
+            value={newAbout.problem}
+            onChange={handleInputChange}
+            className="p-2 border rounded"
+            required
+          />
+        </div>
+        <div className="flex flex-col mb-4">
+          <label className="mb-2 font-bold">Solution</label>
+          <textarea
+            name="solution"
+            value={newAbout.solution}
             onChange={handleInputChange}
             className="p-2 border rounded"
             required
@@ -168,10 +197,12 @@ const AboutUs = () => {
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         {aboutUsList.map((about) => (
           <div key={about._id} className="border p-4 rounded shadow">
-            <h2 className="text-lg font-bold">{about.name}</h2>
-            <p>{about.info}</p>
+            <h2 className="text-lg font-bold">{about.aboutus}</h2>
+            <p><strong>Market Place:</strong> {about.marketPlace}</p>
+            <p><strong>Problem:</strong> {about.problem}</p>
+            <p><strong>Solution:</strong> {about.solution}</p>
             {about.image && (
-              <img src={about.image} alt={about.name} className="my-2 w-full" />
+              <img src={about.image} alt={about.aboutus} className="my-2 w-full" />
             )}
             <button
               className="bg-red-500 text-white p-2 rounded mt-2"

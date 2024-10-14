@@ -4,17 +4,19 @@ const path = require('path');
 exports.createAboutus = async (req, res) => {
   console.log(req.body);
   try{
-  const { name, info, image } = req.body; // Ensure these fields are being destructured correctly
+  const { aboutus,marketPlace,problem,solution, image } = req.body; // Ensure these fields are being destructured correctly
 
   // Validate the fields
-  if (!name || !info || !image) {
+  if (!aboutus|| !marketPlace || !solution || !problem || !solution || !image) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
   // Create a new service document
   const newAboutus = new Aboutus({
-    name,
-    info,
+    aboutus,
+    marketPlace,
+    problem,
+    solution,
     image,
   });
 

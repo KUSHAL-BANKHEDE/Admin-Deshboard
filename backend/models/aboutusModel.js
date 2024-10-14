@@ -2,8 +2,10 @@ const mongoose = require('mongoose');
 
 const AboutusSchema = new mongoose.Schema({
 
-    name: { type: String, unique: true, required: true },
-    info: { type: String , required:true},
+    aboutus: { type: String, required: true },
+    marketPlace: { type: String , required:true},
+    problem: { type: String, required:true},
+    solution: {type: String , required: true},
     image:{type: String , required:true},
     
 });

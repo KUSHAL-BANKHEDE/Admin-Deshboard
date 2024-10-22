@@ -1,7 +1,7 @@
 const express = require('express');
 const { getAllServices, createService, updateServices, deleteService } = require('../controllers/servicesController');
 const authMiddleware = require('../middleware/authMiddleware');
-const upload = require('../middleware/multer')
+
 
 const router = express.Router();
 

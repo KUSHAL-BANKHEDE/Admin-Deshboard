@@ -13,7 +13,8 @@ const AboutUs = () => {
     solution: "", 
     image: null
   });
-  
+  const [editingId, setEditingId] = useState(null); // Track editing state
+
   // Fetch About Us data on load
   useEffect(() => {
     fetchAboutUs();
@@ -36,7 +37,7 @@ const AboutUs = () => {
     }
   };
 
-  // Handle input change for About Us creation
+  // Handle input change for About Us creation/editing
   const handleInputChange = (e) => {
     const { name, value, files } = e.target;
     if (name === "image") {
@@ -71,12 +72,14 @@ const AboutUs = () => {
     }
   };
 
-  // Submit new About Us entry
+  // Submit new or updated About Us entry
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Upload the image to Cloudinary
-    const uploadedImageUrl = await uploadImageToCloudinary(newAbout.image);
+    // Upload the image to Cloudinary (if new image is selected)
+    const uploadedImageUrl = newAbout.image instanceof File
+      ? await uploadImageToCloudinary(newAbout.image)
+      : newAbout.image; // Use existing image URL if in edit mode and no new image is selected
 
     if (uploadedImageUrl) {
       const aboutData = {
@@ -87,24 +90,51 @@ const AboutUs = () => {
         image: uploadedImageUrl,
       };
 
-      try {
-        const token = sessionStorage.getItem("token");
-        const response = await fetch(`${Domain}/api/aboutus`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(aboutData),
-        });
+      const token = sessionStorage.getItem("token");
 
-        if (response.ok) {
-          fetchAboutUs(); // Refresh the list
-        } else {
-          console.error("Error creating About Us entry");
+      if (editingId) {
+        // Update existing entry
+        try {
+          const response = await fetch(`${Domain}/api/aboutus/${editingId}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(aboutData),
+          });
+
+          if (response.ok) {
+            fetchAboutUs(); // Refresh the list
+            setEditingId(null); // Clear editing state
+            setNewAbout({ aboutus: "", marketPlace: "", problem: "", solution: "", image: null }); // Clear form
+          } else {
+            console.error("Error updating About Us entry");
+          }
+        } catch (error) {
+          console.error("Error updating About Us entry", error);
         }
-      } catch (error) {
-        console.error("Error creating About Us entry", error);
+      } else {
+        // Create new entry
+        try {
+          const response = await fetch(`${Domain}/api/aboutus`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(aboutData),
+          });
+
+          if (response.ok) {
+            fetchAboutUs(); // Refresh the list
+            setNewAbout({ aboutus: "", marketPlace: "", problem: "", solution: "", image: null }); // Clear form
+          } else {
+            console.error("Error creating About Us entry");
+          }
+        } catch (error) {
+          console.error("Error creating About Us entry", error);
+        }
       }
     }
   };
@@ -130,9 +160,21 @@ const AboutUs = () => {
     }
   };
 
+  // Handle edit button click
+  const handleEdit = (about) => {
+    setEditingId(about._id); // Set the ID of the item being edited
+    setNewAbout({
+      aboutus: about.aboutus,
+      marketPlace: about.marketPlace,
+      problem: about.problem,
+      solution: about.solution,
+      image: about.image,
+    });
+  };
+
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">Manage About Us</h1>
+      <h1 className="text-2xl font-bold mb-4">{editingId ? "Edit About Us" : "Create About Us"}</h1>
 
       {/* New About Us Form */}
       <form onSubmit={handleSubmit} className="mb-6">
@@ -185,11 +227,10 @@ const AboutUs = () => {
             name="image"
             onChange={handleInputChange}
             className="p-2 border rounded"
-            required
           />
         </div>
         <button type="submit" className="bg-blue-500 text-white p-2 rounded">
-          Create About Us Entry
+          {editingId ? "Update About Us" : "Create About Us"}
         </button>
       </form>
 
@@ -204,6 +245,12 @@ const AboutUs = () => {
             {about.image && (
               <img src={about.image} alt={about.aboutus} className="my-2 w-full" />
             )}
+            <button
+              className="bg-yellow-500 text-white p-2 rounded mt-2"
+              onClick={() => handleEdit(about)}
+            >
+              Edit
+            </button>
             <button
               className="bg-red-500 text-white p-2 rounded mt-2"
               onClick={() => handleDelete(about._id)}

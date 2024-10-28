@@ -14,7 +14,7 @@ dotenv.config();
 
 const app = express();
 app.use(cors());
-const PORT = 5003;
+const PORT = 5002;
 
 // Middleware to parse incoming request body
 app.use(bodyParser.json());
@@ -24,8 +24,15 @@ app.use(bodyParser.json());
  
  mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
  .then(() => console.log('MongoDB connected'))
- .catch((err) => console.error(err));
+ .catch((err) => console.error(err))
 
+ app.use(cors({
+   origin: '*',
+   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+   credentials: true
+ }));
+
+ app.options('*', cors());
 
  app.use('/api', authRoutes);
  app.use('/api' , servicesRoutes);

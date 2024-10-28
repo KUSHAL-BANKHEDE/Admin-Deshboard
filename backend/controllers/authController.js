@@ -1,9 +1,9 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
-const adminID = 'admin';
-const adminPassword = 'admin';
-const secretKey = 'yourSecretKey';
+const adminID = 'hire2024Admin';
+const adminPassword = 'Hire@nything2024';
+const secretKey = 'kushal';
 
 
 // User login

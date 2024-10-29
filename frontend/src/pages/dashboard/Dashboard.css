@@ -1,0 +1,73 @@
+.dashboard-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: auto; /* Enables scrolling if necessary */
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.search-bar {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+table {
+    width: 100%; /* Ensure the table takes full width */
+    border-collapse: collapse; /* Collapse borders for a cleaner look */
+}
+
+th, td {
+    padding: 10px; /* Add padding to table cells */
+    text-align: left; /* Align text to the left */
+    border-bottom: 1px solid #ddd; /* Add a bottom border for separation */
+}
+
+th {
+    background-color: #007bff; /* Header background color */
+    color: white; /* Header text color */
+    position: sticky; /* Make the header sticky */
+    top: 0; /* Stick to the top */
+    z-index: 1; /* Ensure it stays on top of other content */
+}
+
+tbody tr:hover {
+    background-color: #f1f1f1; /* Hover effect for table rows */
+}
+
+.dashboard-container button {
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.dashboard-container button:hover {
+    opacity: 0.9;
+}
+
+.dashboard-container button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.dashboard-container button {
+    font-weight: 500;
+    min-width: 120px;
+    transition: all 0.2s ease;
+}
+
+.dashboard-container button:not(:disabled):hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}

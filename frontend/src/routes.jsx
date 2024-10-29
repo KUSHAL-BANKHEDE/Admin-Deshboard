@@ -14,6 +14,8 @@ import Category from "./pages/dashboard/category";
 import Footer from "./pages/dashboard/footer";
 import SignOut from "./pages/dashboard/sign-out";
 import AllQueries from "./pages/dashboard/userQueries";
+import Dashboard from "./pages/dashboard/Dashboard";
+import ApprovedVenues from "./pages/dashboard/ApprovedVenues";
 
 const icon = {
   className: "w-5 h-5 text-inherit",
@@ -43,6 +45,12 @@ export const routes = [
         path: "/aboutus",
         element: <AboutUs/> 
       },
+        {
+        icon: <RectangleStackIcon className="h-5 w-5" />, // Example icon for services
+        name: "Venue Bookings",
+        path: "/dashboard",
+        element: <Dashboard/> 
+      },
 
       {
         icon: <RectangleStackIcon className="h-5 w-5" />, // Example icon for services
@@ -64,7 +72,13 @@ export const routes = [
         path: "/allQueries",
         element: <AllQueries/> 
       },
-     
+
+      {
+        icon: <RectangleStackIcon className="h-5 w-5" />,
+        name: "Approved Venues",
+        path: "/approved-venues",
+        element: <ApprovedVenues/>
+      },
 
       // {
       //   icon: <UserCircleIcon {...icon} />,

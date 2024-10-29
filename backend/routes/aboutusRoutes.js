@@ -1,7 +1,7 @@
 const express = require('express');
 
 const authMiddleware = require('../middleware/authMiddleware');
-const upload = require('../middleware/multer');
+
 const { getAllAboutus, createAboutus, updateAboutus, deleteAboutus } = require('../controllers/aboutusController');
 
 const router = express.Router();

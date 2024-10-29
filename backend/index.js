@@ -4,50 +4,47 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const cloudinary = require('cloudinary').v2;
 const dotenv = require('dotenv');
+const path = require('path');
+
+dotenv.config();
+
 const authRoutes = require('./routes/authRoutes');
 const servicesRoutes = require('./routes/servicesRoutes');
 const categoryRoutes = require('./routes/categoryRouter');
 const aboutusRoutes = require('./routes/aboutusRoutes');
 const footerRoutes = require('./routes/footerRoutes');
-const path = require('path');
-dotenv.config(); 
+const bookRoutes = require('./routes/bookRoutes'); // Import book routes
 
 const app = express();
-app.use(cors());
-const PORT = 5002;
+const PORT = 5003;
 
-// Middleware to parse incoming request body
+// Middleware
+app.use(cors({
+    origin: 'http://localhost:5173',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
+  
 app.use(bodyParser.json());
 
-// Hardcoded admin credentials
- // This should be a strong secret key in production
- 
- mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
- .then(() => console.log('MongoDB connected'))
- .catch((err) => console.error(err))
-
- app.use(cors({
-   origin: '*',
-   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-   credentials: true
- }));
-
- app.options('*', cors());
-
- app.use('/api', authRoutes);
- app.use('/api' , servicesRoutes);
- app.use('/api' , categoryRoutes);
- app.use('/api' , aboutusRoutes);
- app.use('/api' , footerRoutes);
- 
-
-// Example protected route
-// app.get('/admin-dashboard', verifyToken, (req, res) => {
-//     res.json({ message: 'Welcome to the Admin Dashboard', user: req.user });
-// });
+// MongoDB Connection
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/myname', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  }).then(() => console.log('MongoDB connected'))
+    .catch((err) => console.error('MongoDB connection error:', err));
+  
+// Define routes
+app.use('/api', authRoutes);
+app.use('/api', servicesRoutes);
+app.use('/api', categoryRoutes);
+app.use('/api', aboutusRoutes);
+app.use('/api', footerRoutes);
+app.use('/api/books', bookRoutes); // Use the book routes
 
 // Start the server
 app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-    console.log('Admin ID: "admin" and Admin Password: "admin" created');
+  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log('Admin ID: "admin" and Admin Password: "admin" created');
 });
